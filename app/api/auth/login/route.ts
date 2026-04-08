@@ -10,8 +10,13 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  const body = await request.json()
-  const { password } = body as { password?: string }
+  let body: { password?: string }
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'Requisição inválida' }, { status: 400 })
+  }
+  const { password } = body
 
   if (!password || password !== secret) {
     return NextResponse.json(
