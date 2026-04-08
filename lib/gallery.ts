@@ -15,8 +15,12 @@ export function readGallery(): GalleryCase[] {
   if (!existsSync(DATA_PATH)) return []
 
   const raw = readFileSync(DATA_PATH, 'utf-8')
-  const cases: GalleryCase[] = JSON.parse(raw)
-  return cases.sort((a, b) => a.order - b.order)
+  try {
+    const cases: GalleryCase[] = JSON.parse(raw)
+    return cases.sort((a, b) => a.order - b.order)
+  } catch {
+    return []
+  }
 }
 
 export function writeGallery(cases: GalleryCase[]): void {
