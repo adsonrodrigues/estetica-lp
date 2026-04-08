@@ -13,8 +13,14 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   }
 
   const { id } = await context.params
-  const body = await request.json()
-  const { label } = body as { label?: string }
+
+  let body: { label?: string }
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'Requisição inválida' }, { status: 400 })
+  }
+  const { label } = body
 
   if (!label || label.trim().length === 0 || label.trim().length > 100) {
     return NextResponse.json(

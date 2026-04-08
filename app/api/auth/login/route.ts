@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { timingSafeEqual } from 'crypto'
 import { generateToken, COOKIE_NAME, MAX_AGE } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
@@ -18,11 +19,18 @@ export async function POST(request: NextRequest) {
   }
   const { password } = body
 
-  if (!password || password !== secret) {
-    return NextResponse.json(
-      { error: 'Senha incorreta' },
-      { status: 401 }
-    )
+  if (!password) {
+    return NextResponse.json({ error: 'Senha incorreta' }, { status: 401 })
+  }
+
+  // Comparação constant-time para prevenir timing attacks
+  const pwdBuf = Buffer.from(password)
+  const secretBuf = Buffer.from(secret)
+  const match =
+    pwdBuf.length === secretBuf.length && timingSafeEqual(pwdBuf, secretBuf)
+
+  if (!match) {
+    return NextResponse.json({ error: 'Senha incorreta' }, { status: 401 })
   }
 
   const token = generateToken()
