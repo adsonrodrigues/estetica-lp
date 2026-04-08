@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, DragEvent, ChangeEvent } from 'react'
+import { useState, useRef, useEffect, DragEvent, ChangeEvent } from 'react'
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_SIZE = 5 * 1024 * 1024 // 5MB
@@ -19,6 +19,13 @@ export default function AddCaseModal({ onClose, onSuccess }: AddCaseModalProps) 
   const [saving, setSaving] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Revogar ObjectURL ao desmontar ou trocar de arquivo para evitar memory leak
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview)
+    }
+  }, [preview])
 
   function validateFile(f: File): string | null {
     if (!ALLOWED_TYPES.includes(f.type)) return 'Formato não aceito'
