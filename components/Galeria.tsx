@@ -1,42 +1,27 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 
-const cases = [
-  {
-    label: 'Arquitetura Facial',
-    image: '/images/gallery-arquitetura-facial.png',
-  },
-  {
-    label: 'Harmonização Facial',
-    image: '/images/gallery-harmonizacao-facial.png',
-  },
-  {
-    label: 'Rinomodelação',
-    image: '/images/gallery-rinomodelacao.png',
-  },
-  {
-    label: 'Bioestimuladores',
-    image: '/images/gallery-bioestimuladores-1.png',
-  },
-  {
-    label: 'Lifting Facial',
-    image: '/images/gallery-lifting-facial.png',
-  },
-  {
-    label: 'Bioestimuladores',
-    image: '/images/gallery-bioestimuladores-2.png',
-  },
-  {
-    label: 'Harmonização Facial',
-    image: '/images/gallery-harmonizacao-senior.png',
-  },
-]
+interface GalleryCase {
+  id: string
+  label: string
+  image: string
+  order: number
+  createdAt: string
+}
 
 export default function Galeria() {
   const trackRef = useRef<HTMLDivElement>(null)
+  const [cases, setCases] = useState<GalleryCase[]>([])
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
+
+  useEffect(() => {
+    fetch('/api/gallery')
+      .then(res => res.json())
+      .then(json => setCases(json.data || []))
+      .catch(() => setCases([]))
+  }, [])
 
   const scroll = (direction: 'left' | 'right') => {
     if (!trackRef.current) return
