@@ -102,8 +102,8 @@ export default function Galeria() {
           className="gallery-track"
           style={{ cursor: 'grab' }}
         >
-          {cases.map((c, i) => (
-            <div key={i} className="gallery-item flex flex-col gap-3" style={{ width: '280px' }}>
+          {cases.map((c) => (
+            <div key={c.id} className="gallery-item flex flex-col gap-3" style={{ width: '280px' }}>
               {/* Before/after image — each photo already contains side-by-side */}
               <div
                 className="overflow-hidden"
