@@ -23,11 +23,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Senha incorreta' }, { status: 401 })
   }
 
-  // Comparação constant-time para prevenir timing attacks
+  // Comparação constant-time para prevenir timing attacks.
+  // Pad do password para o tamanho do secret garante que timingSafeEqual
+  // sempre executa — evita vazar comprimento da senha via timing do short-circuit.
   const pwdBuf = Buffer.from(password)
   const secretBuf = Buffer.from(secret)
-  const match =
-    pwdBuf.length === secretBuf.length && timingSafeEqual(pwdBuf, secretBuf)
+  const paddedPwd = Buffer.alloc(secretBuf.length, 0)
+  pwdBuf.copy(paddedPwd)
+  const match = timingSafeEqual(paddedPwd, secretBuf) && pwdBuf.length === secretBuf.length
 
   if (!match) {
     return NextResponse.json({ error: 'Senha incorreta' }, { status: 401 })
